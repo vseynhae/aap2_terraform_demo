@@ -4,6 +4,6 @@
   tasks:
     - name: Terraform apply
       cloud.terraform.terraform:
-        project_path: terraform/
+        project_path: ../terraform/
         state: present
         force_init: true
