@@ -24,9 +24,9 @@ resource "aws_instance" "tf-demo-aws-ec2-instance-2" {
 }
 
 provider "aap" {
-  host     = ${env.CONTROLLER_HOST}
-  username = ${env.CONTROLLER_USERNAME}
-  password = ${env.CONTROLLER_PASSWORD}
+  host     = "${env.CONTROLLER_HOST}"
+  username = "${env.CONTROLLER_USERNAME}"
+  password = "${env.CONTROLLER_PASSWORD}"
   insecure_skip_verify = true
 }
 
