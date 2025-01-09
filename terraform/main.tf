@@ -25,7 +25,4 @@ resource "aws_instance" "tf-demo-aws-ec2-instance-1" {
     Name = "tf-demo-aws-ec2-instance-1"
   }
 
-network_interface {
-    network = "default"
-  }  
 }
