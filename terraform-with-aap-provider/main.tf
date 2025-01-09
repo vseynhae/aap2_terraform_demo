@@ -25,6 +25,8 @@ resource "aws_instance" "tf-demo-aws-ec2-instance-2" {
 
 provider "aap" {
   host     = "https://localhost:8043"
+  username = "admin"          # CHANGE ME
+  password = "ansible123!"    # CHANGE ME
   insecure_skip_verify = true
 }
 
