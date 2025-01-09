@@ -24,9 +24,9 @@ resource "aws_instance" "tf-demo-aws-ec2-instance-2" {
 }
 
 provider "aap" {
-  host     = "${env.CONTROLLER_HOST}"
-  username = "${env.CONTROLLER_USERNAME}"
-  password = "${env.CONTROLLER_PASSWORD}"
+  host     = "https://controller"
+  username = "admin"
+  password = "ansible123!"
   insecure_skip_verify = true
 }
 
