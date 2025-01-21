@@ -9,6 +9,7 @@ terraform {
       source = "ansible/aap"
     }
   }
+  backend "s3" {}
 }
 
 provider "aws" {
