@@ -22,6 +22,7 @@ resource "aws_instance" "tf-demo-aws-ec2-instance-1" {
   tags = {
     Name = "tf-demo-aws-ec2-instance-1"
   }
+}
 
 resource "aws_instance" "tf-demo-aws-ec2-instance-2" {
   ami           = "ami-0005e0cfe09cc9050"
