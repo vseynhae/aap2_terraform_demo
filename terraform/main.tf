@@ -22,6 +22,41 @@ resource "aws_vpc" "main_vpc" {
   }
 }
 
+resource "aws_security_group" "voxxed_sg" {
+  name        = "voxxed-sg"
+  description = "Allow SSH and HTTP"
+  vpc_id      = aws_vpc.main_vpc.id
+
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Consider replacing with your IP for security
+  }
+
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "All traffic out"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "voxxed-sg"
+  }
+}
+
+
 resource "aws_subnet" "public_subnet" {
   vpc_id            = aws_vpc.main_vpc.id
   cidr_block        = "10.0.1.0/24"
