@@ -18,7 +18,7 @@
     - name: Create index.html with custom content
       ansible.builtin.copy:
         dest: /var/www/html/index.html
-        content: "Hello Voxxed Days\n"
+        content: "{{ message | default('Hello World') }}"
         owner: root
         group: root
         mode: '0644'
