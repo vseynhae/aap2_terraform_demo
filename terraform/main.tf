@@ -98,6 +98,7 @@ resource "aws_instance" "voxxed1" {
   subnet_id                   = aws_subnet.public_subnet.id
   associate_public_ip_address = true
   key_name = "voxxed"
+  vpc_security_group_ids = [aws_security_group.voxxed_sg.id]
   tags = {
     Name = "voxxed1"
   }
