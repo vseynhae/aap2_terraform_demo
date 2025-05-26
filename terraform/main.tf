@@ -10,7 +10,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-north-1"
+  region = "eu-central-1"
 }
 
 # Fetch the default VPC
@@ -19,7 +19,7 @@ data "aws_vpc" "default" {
 }
 
 resource "aws_instance" "tf-demo-aws-ec2-instance-1" {
-  ami           = "ami-0decbb1739c22d50c"
+  ami           = "ami-00513967e6b47e386"
   instance_type = "t3.micro"
   tags = {
     Name = "tf-demo-aws-ec2-instance-1"
