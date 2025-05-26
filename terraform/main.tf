@@ -65,6 +65,10 @@ resource "aws_route_table_association" "public_assoc" {
 resource "aws_instance" "voxxed1" {
   ami           = "ami-00513967e6b47e386"
   instance_type = "t3.medium"
+  subnet_id                   = aws_subnet.public_subnet.id
+  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
+  associate_public_ip_address = true
+  key_name                    = var.key_name
   tags = {
     Name = "voxxed1"
   }
