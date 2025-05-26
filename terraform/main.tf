@@ -62,6 +62,7 @@ resource "aws_instance" "voxxed1" {
   instance_type = "t3.medium"
   subnet_id                   = aws_subnet.public_subnet.id
   associate_public_ip_address = true
+  key_name = "voxxed"
   tags = {
     Name = "voxxed1"
   }
