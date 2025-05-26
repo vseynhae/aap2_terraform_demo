@@ -20,7 +20,7 @@ data "aws_vpc" "default" {
 
 resource "aws_instance" "tf-demo-aws-ec2-instance-1" {
   ami           = "ami-00513967e6b47e386"
-  instance_type = "t3.micro"
+  instance_type = "t3.medium"
   tags = {
     Name = "tf-demo-aws-ec2-instance-1"
   }
