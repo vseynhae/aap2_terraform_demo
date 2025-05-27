@@ -19,7 +19,7 @@ In the `build_demo` folder, replace the vault.yml with your own.
 
 The vault structure should look like this:
 
-```json
+```yaml
 aap2_host: your-aap-hostname
 aap2_username: admin
 aap2_password: your-aap-admin-password
@@ -33,7 +33,6 @@ ssh_private_key: |
     -----BEGIN OPENSSH PRIVATE KEY-----
     YOUR SSH PRIVATE KEY HERE
     -----END OPENSSH PRIVATE KEY-----
-                                        
 ```
 
 Run `ansible-playbook 00-prepare.yml`.
