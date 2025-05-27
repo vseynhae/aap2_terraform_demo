@@ -8,7 +8,7 @@
   tasks:
     - name: Amazon Linux
       block:
-      - name: Install apache2 package on Ubuntu
+      - name: Install httpd on Amazon Linux
         ansible.builtin.yum:
           name: httpd
           state: present
