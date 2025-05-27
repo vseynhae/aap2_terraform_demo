@@ -11,6 +11,15 @@
   - ansible.controller
 
   tasks:
+  - name: create a new EC2 key pair in AWS and capture private key to store in AAP later
+    amazon.aws.ec2_key:
+      name: voxxed_key
+      region: eu-central-1
+      access_key: "{{ aws_access }}"
+      secret_key: "{{ aws_secret }}"
+    no_log: true
+    register: key_pair
+
   - name: Making sure the org exists
     ansible.platform.organization:
       name: "voxxed"
@@ -37,7 +46,6 @@
       controller_password: "{{ aap2_password }}"
       validate_certs: False
       name: "voxxed"
-      description: ""
       organization: "voxxed"
       scm_type: git
       scm_update_on_launch: True
@@ -76,6 +84,18 @@
           region = "eu-central-1"
           access_key = "{{ aws_access }}"
           secret_key = "{{ aws_secret }}"
+
+  - name: Create machine credential to SSH on EC2 instances
+    ansible.controller.credential:
+      controller_host: "{{ aap2_host }}"
+      controller_username: "{{ aap2_username }}"
+      controller_password: "{{ aap2_password }}"
+      validate_certs: true
+      name: "AWS EC2 SSH"
+      credential_type: Machine
+      organization: "voxxed"
+      inputs:
+        ssh_key_data: "{{ key_pair['key']['private_key'] }}"
 
   - name: create an inventory
     ansible.controller.inventory:
@@ -118,7 +138,8 @@
       state: present
       project: "voxxed"
       inventory: "voxxed inventory"
-      playbook: "1-deploy.yml"
+      playbook: "playbooks/1-deploy.yml"
+      execution_environment: EE_terraform
       credentials:
       - "voxxed AWS creds"
       - "voxxed Terraform state credential"
