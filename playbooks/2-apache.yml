@@ -1,19 +1,40 @@
 ---
-- name: Install and configure Apache HTTP Server
+- name: Install and configure Apache HTTP Server on any Linux distribution
   hosts: all
   become: yes
+  # needed for OS distribution
+  gather_facts: true
 
   tasks:
-    - name: Install httpd package
-      ansible.builtin.dnf:
-        name: httpd
-        state: present
+    - name: Ubuntu OS
+      block:
+      - name: Install apache2 package on Ubuntu
+        ansible.builtin.dnf:
+          name: apache2
+          state: present
 
-    - name: Ensure httpd is running and enabled
-      ansible.builtin.service:
-        name: httpd
-        state: started
-        enabled: yes
+      - name: Ensure apache2 is running and enabled
+        ansible.builtin.service:
+          name: httpd
+          state: started
+          enabled: yes
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+
+    - name: CentOS OS
+      block:
+      - name: Install httpd package on CentOS
+        ansible.builtin.dnf:
+          name: httpd
+          state: present
+
+      - name: Ensure httpd is running and enabled
+        ansible.builtin.service:
+          name: httpd
+          state: started
+          enabled: yes
+      when: ansible_facts['distribution'] == 'CentOS'
+
 
     - name: Create index.html with custom content
       ansible.builtin.copy:
