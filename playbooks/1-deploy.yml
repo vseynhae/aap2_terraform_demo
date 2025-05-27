@@ -2,7 +2,7 @@
 - name: Deploy resources via Terraform
   hosts: localhost
   tasks:
-    - name: Terraform apply
+    - name: Create EC2 instance with Terraform
       cloud.terraform.terraform:
         project_path: ../terraform/
         state: present

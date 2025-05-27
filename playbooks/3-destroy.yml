@@ -2,7 +2,7 @@
 - name: Deploy resources via Terraform
   hosts: localhost
   tasks:
-    - name: Terraform apply
+    - name: Destroy EC2 instance using Terraform
       cloud.terraform.terraform:
         project_path: ../terraform/
         state: absent
