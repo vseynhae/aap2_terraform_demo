@@ -3,3 +3,4 @@ execution-environment/context
 .terraform.*
 .DS_Store
 .env
+vault-password.txt
