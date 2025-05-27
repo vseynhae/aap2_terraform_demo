@@ -57,10 +57,12 @@ Some AWS resources:
 
 Under Automation Execution > Templates, run the workflow.
 
-It will create two EC2 instances (CentOS Stream + Amazon Linux).
+It will create two EC2 instances (CentOS Stream + Amazon Linux) using Terraform.
 
-It will refresh the inventory (sourced from the Terraform state file stored in an S3 bucket).
+When Terraform is done, the state file is stored in the S3 bucket.
 
-It will install Apache on both instances.
+The workflow will refresh the inventory (based on the state file).
+
+The next job will install Apache on the instances found in the Terraform state file.
 
  
