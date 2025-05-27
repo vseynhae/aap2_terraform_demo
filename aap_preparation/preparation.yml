@@ -1,0 +1,124 @@
+---
+- name: Create my organization
+  hosts: localhost
+  gather_facts: False
+
+  vars_files:
+  - vault.yml
+
+  collections:
+  - ansible.platform
+  - ansible.controller
+
+  tasks:
+  - name: Making sure the org exists
+    ansible.platform.organization:
+      name: "voxxed"
+      state: present
+      gateway_hostname: "{{ aap2_host }}"
+      gateway_username: "{{ aap2_username }}"
+      gateway_password: "{{ aap2_password }}"
+      gateway_validate_certs: true
+
+  - name: Add the EE that contains Terraform
+    ansible.controller.execution_environment:
+      name: "EE_terraform"
+      state: present
+      controller_host: "{{ aap2_host }}"
+      controller_username: "{{ aap2_username }}"
+      controller_password: "{{ aap2_password }}"
+      validate_certs: true
+      image: quay.io/acme_corp/terraform_ee
+
+  - name: Create the project
+    ansible.controller.project:
+      controller_host: "{{ aap2_host }}"
+      controller_username: "{{ aap2_username }}"
+      controller_password: "{{ aap2_password }}"
+      validate_certs: False
+      name: "voxxed"
+      description: ""
+      organization: "voxxed"
+      scm_type: git
+      scm_update_on_launch: True
+      scm_update_cache_timeout: 60
+      scm_url: https://github.com/sebw/aap2_terraform_demo
+      scm_branch: main
+      state: present
+
+  - name: Create AWS credential
+    ansible.controller.credential:
+      controller_host: "{{ aap2_host }}"
+      controller_username: "{{ aap2_username }}"
+      controller_password: "{{ aap2_password }}"
+      validate_certs: False
+      name: "voxxed AWS creds"
+      organization: "voxxed"
+      state: present
+      credential_type: "Amazon Web Services"
+      inputs:
+        username: "{{ aws_access }}"
+        password: "{{ aws_secret }}"
+
+  - name: Create Terraform State credential
+    ansible.controller.credential:
+      controller_host: "{{ aap2_host }}"
+      controller_username: "{{ aap2_username }}"
+      controller_password: "{{ aap2_password }}"
+      validate_certs: true
+      name: "voxxed Terraform state credential"
+      credential_type: Terraform backend configuration
+      organization: "voxxed"
+      inputs:
+        configuration: |
+          bucket = "aapvoxxedlux2"
+          key = "app1.tfstate"
+          region = "eu-central-1"
+          access_key = "{{ aws_access }}"
+          secret_key = "{{ aws_secret }}"
+
+  - name: create an inventory
+    ansible.controller.inventory:
+      controller_host: "{{ aap2_host }}"
+      controller_username: "{{ aap2_username }}"
+      controller_password: "{{ aap2_password }}"
+      validate_certs: true
+      name: "voxxed inventory"
+      organization: "voxxed"
+      state: present
+
+  - name: Add an inventory source
+    inventory_source:
+      controller_host: "{{ aap2_host }}"
+      controller_username: "{{ aap2_username }}"
+      controller_password: "{{ aap2_password }}"
+      validate_certs: true
+      name: "Terraform State"
+      description: Source for inventory
+      execution_environment: "EE_terraform"
+      inventory: "voxxed inventory"
+      source: terraform
+      credential: "voxxed Terraform state credential"
+      overwrite: true
+      update_on_launch: true
+      organization: voxxed
+      source_vars:
+        backend_type: s3
+        hostnames:
+        - public_dns
+
+  - name: Create job for deploying EC2 instance
+    ansible.controller.job_template:
+      controller_host: "{{ aap2_host }}"
+      controller_username: "{{ aap2_username }}"
+      controller_password: "{{ aap2_password }}"
+      validate_certs: True
+      name: "Deploy EC2"
+      organization: "voxxed"
+      state: present
+      project: "voxxed"
+      inventory: "voxxed inventory"
+      playbook: "1-deploy.yml"
+      credentials:
+      - "voxxed AWS creds"
+      - "voxxed Terraform state credential"
