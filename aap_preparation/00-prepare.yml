@@ -11,7 +11,7 @@
   - ansible.controller
 
   tasks:
-  - name: create a new EC2 key pair in AWS and capture private key to store in AAP later
+  - name: Import pubkey into a new EC2 key pair
     amazon.aws.ec2_key:
       name: voxxed_key
       region: eu-central-1
@@ -22,7 +22,7 @@
     no_log: true
     register: key_pair
 
-  - name: Making sure the org exists
+  - name: Create AAP organization
     ansible.platform.organization:
       name: "voxxed"
       state: present
@@ -31,7 +31,7 @@
       gateway_password: "{{ aap2_password }}"
       gateway_validate_certs: true
 
-  - name: Add the EE that contains Terraform
+  - name: Add the EE that contains Terraform binary and collection
     ansible.controller.execution_environment:
       name: "EE_terraform"
       state: present
@@ -56,7 +56,7 @@
       scm_branch: main
       state: present
 
-  - name: Create AWS credential
+  - name: Create credential that will allow AAP to access AWS
     ansible.controller.credential:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
@@ -87,7 +87,7 @@
           access_key = "{{ aws_access }}"
           secret_key = "{{ aws_secret }}"
 
-  - name: Create machine credential to SSH on EC2 instances
+  - name: Create machine credential to access EC2 instances
     ansible.controller.credential:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
@@ -100,7 +100,6 @@
         username: ec2-user
         ssh_key_data: "{{ ssh_private_key }}"
 
-# ssh_key_data: "{{ key_pair['key']['private_key'] }}"
   - name: create an inventory
     ansible.controller.inventory:
       controller_host: "{{ aap2_host }}"
@@ -111,7 +110,7 @@
       organization: "voxxed"
       state: present
 
-  - name: Add an inventory source
+  - name: Add a dynamic source to the inventory using the TF state file
     inventory_source:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
@@ -131,13 +130,13 @@
         hostnames:
         - public_dns
 
-  - name: Create job for deploying EC2 instance
+  - name: Create job for deploying EC2 instances
     ansible.controller.job_template:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
       validate_certs: True
-      name: "Deploy EC2"
+      name: "Deploy EC2 instances"
       organization: "voxxed"
       state: present
       project: "voxxed"
@@ -154,7 +153,7 @@
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
       validate_certs: True
-      name: "Destroy EC2"
+      name: "Destroy EC2 instances"
       organization: "voxxed"
       state: present
       project: "voxxed"
@@ -165,7 +164,7 @@
       - "voxxed AWS creds"
       - "voxxed Terraform state credential"
 
-  - name: Create job for deploying Apache
+  - name: Create job for deploying Apache Web Server
     ansible.controller.job_template:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
@@ -182,7 +181,7 @@
       extra_vars:
         message: Hello World
 
-  - name: Create workflow
+  - name: Create a workflow that plugs everything together
     ansible.controller.workflow_job_template:
       name: "voxxed workflow TF + Ansible"
       controller_host: "{{ aap2_host }}"
@@ -196,7 +195,7 @@
         unified_job_template:
           organization:
             name: "voxxed"
-          name: "Deploy EC2"
+          name: "Deploy EC2 instances"
           alias: "Deploy EC2 with Terraform"
           type: job_template
         related:
@@ -216,7 +215,8 @@
         unified_job_template:
           organization:
             name: "voxxed"
-          name: "Destroy EC2"
+          name: "Destroy EC2 instances"
+          alias: "Clean up EC2 instances"
           type: job_template
       - identifier: approval
         all_parents_must_converge: false
