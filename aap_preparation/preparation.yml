@@ -1,5 +1,5 @@
 ---
-- name: Create my organization
+- name: prepare AAP with all the components for the demo
   hosts: localhost
   gather_facts: False
 
@@ -168,3 +168,5 @@
       playbook: "playbooks/2-apache.yml"
       credentials:
       - "AWS EC2 SSH"
+      survey_enabled: true
+      survey_spec: "{{ lookup('file', 'survey.json') }}"
