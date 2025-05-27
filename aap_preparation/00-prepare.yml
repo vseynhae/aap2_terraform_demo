@@ -52,7 +52,7 @@
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
-      validate_certs: False
+      validate_certs: True
       name: "voxxed"
       organization: "voxxed"
       scm_type: git
@@ -67,7 +67,7 @@
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
-      validate_certs: False
+      validate_certs: True
       name: "voxxed AWS creds"
       organization: "voxxed"
       state: present
