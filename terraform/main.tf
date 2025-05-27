@@ -92,11 +92,26 @@ resource "aws_route_table_association" "public_assoc" {
   route_table_id = aws_route_table.public_rt.id
 }
 
-resource "aws_instance" "voxxed2" {
+resource "aws_instance" "centos" {
   ami           = "ami-00513967e6b47e386"
   instance_type = "t3.medium"
   subnet_id                   = aws_subnet.public_subnet.id
   associate_public_ip_address = true
   key_name = "voxxed_key"
   vpc_security_group_ids = [aws_security_group.voxxed_sg.id]
+  tags = {
+    Name = "centos"
+  }
+}
+
+resource "aws_instance" "ubuntu" {
+  ami           = "ami-03250b0e01c28d196"
+  instance_type = "t3.medium"
+  subnet_id                   = aws_subnet.public_subnet.id
+  associate_public_ip_address = true
+  key_name = "voxxed_key"
+  vpc_security_group_ids = [aws_security_group.voxxed_sg.id]
+  tags = {
+    Name = "ubuntu"
+  }
 }
