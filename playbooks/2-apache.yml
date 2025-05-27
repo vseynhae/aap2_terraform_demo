@@ -25,3 +25,10 @@
 
     - debug:
         msg: "You can now try to connect to http://{{ inventory_hostname }}"
+
+    - uri:
+        url: http://{{ inventory_hostname }}
+      register: http_test
+
+    - debug:
+        var: http_test
