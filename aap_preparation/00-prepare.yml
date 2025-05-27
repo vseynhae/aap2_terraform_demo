@@ -19,8 +19,14 @@
       secret_key: "{{ aws_secret }}"
       state: present
       key_material: "{{ ssh_public_key }}"
-    no_log: true
-    register: key_pair
+
+  - name: Create an S3 bucket to store the Terraform state file
+    amazon.aws.s3_bucket:
+      name: voxxedbucket
+      region: eu-central-1
+      access_key: "{{ aws_access }}"
+      secret_key: "{{ aws_secret }}"
+      state: present
 
   - name: Create AAP organization
     ansible.platform.organization:
@@ -81,7 +87,7 @@
       organization: "voxxed"
       inputs:
         configuration: |
-          bucket = "voxxed"
+          bucket = "voxxedbucket"
           key = "state.tfstate"
           region = "eu-central-1"
           access_key = "{{ aws_access }}"
@@ -111,7 +117,7 @@
       state: present
 
   - name: Add a dynamic source to the inventory using the TF state file
-    inventory_source:
+    ansible.controller.inventory_source:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
@@ -125,6 +131,7 @@
       overwrite: true
       update_on_launch: true
       organization: voxxed
+      verbosity: 1
       source_vars:
         backend_type: s3
         hostnames:
@@ -147,7 +154,7 @@
       - "voxxed AWS creds"
       - "voxxed Terraform state credential"
 
-  - name: Create job for deleting EC2 instance
+  - name: Create job for deleting EC2 instances
     ansible.controller.job_template:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
