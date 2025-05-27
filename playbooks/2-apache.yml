@@ -23,11 +23,12 @@
         group: root
         mode: '0644'
 
-    - name: Checking of Apache Web Server runs
+    - name: Test if Apache Web Server runs
       uri:
         url: http://{{ inventory_hostname }}
       register: http_test
 
-    - debug:
+    - name: It does!
+      debug:
         msg: "You can now try to connect to http://{{ inventory_hostname }}"
       when: http_test.status == 200
