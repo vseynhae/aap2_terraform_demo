@@ -2,11 +2,12 @@
 
 Configuration files and examples used for demonstrating Terraform and Ansible Automation Platform (AAP) integrations. 
 
-Features demonstrated include:
+AAP demonstrated features include:
 
-- Terraform backend credential type in Ansible Automation Platform
-- Terraform state inventory source in Ansible Automation Platform
-- Running your Terraform code inside an AAP workflow 
+- Running your Terraform code inside AAP
+- Include the Terraform code as part of a larger workflow 
+- AAP managing the Terraform State file in an S3 bucket (using the "Terraform backend configuration" credential type)
+- Using the Terraform State file as a dynamic inventory source in order to post configure EC2 instances
 
 ## Requirements
 
