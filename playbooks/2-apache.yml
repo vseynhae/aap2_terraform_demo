@@ -22,3 +22,6 @@
         owner: root
         group: root
         mode: '0644'
+
+    - debug:
+        msg: "You can now try to connect to http://{{ inventory_hostname }}"
