@@ -81,8 +81,8 @@
       organization: "voxxed"
       inputs:
         configuration: |
-          bucket = "aapvoxxedlux2"
-          key = "app1.tfstate"
+          bucket = "voxxed"
+          key = "state.tfstate"
           region = "eu-central-1"
           access_key = "{{ aws_access }}"
           secret_key = "{{ aws_secret }}"
