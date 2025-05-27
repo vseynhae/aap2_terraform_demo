@@ -11,14 +11,6 @@
   - ansible.controller
 
   tasks:
-  - name: delete key pair every time because private key is only displayed once
-    amazon.aws.ec2_key:
-      name: voxxed_key
-      region: eu-central-1
-      access_key: "{{ aws_access }}"
-      secret_key: "{{ aws_secret }}"
-      state: absent
-
   - name: create a new EC2 key pair in AWS and capture private key to store in AAP later
     amazon.aws.ec2_key:
       name: voxxed_key
@@ -26,6 +18,7 @@
       access_key: "{{ aws_access }}"
       secret_key: "{{ aws_secret }}"
       state: present
+      key_material: "{{ ssh_public_key }}"
     no_log: true
     register: key_pair
 
@@ -105,8 +98,9 @@
       organization: "voxxed"
       inputs:
         username: ec2-user
-        ssh_key_data: "{{ key_pair['key']['private_key'] }}"
+        ssh_key_data: "{{ ssh_private_key }}"
 
+# ssh_key_data: "{{ key_pair['key']['private_key'] }}"
   - name: create an inventory
     ansible.controller.inventory:
       controller_host: "{{ aap2_host }}"

@@ -100,18 +100,18 @@ resource "aws_instance" "centos" {
   key_name = "voxxed_key"
   vpc_security_group_ids = [aws_security_group.voxxed_sg.id]
   tags = {
-    Name = "centos"
+    Name = "CentOS Linux"
   }
 }
 
-resource "aws_instance" "ubuntu" {
-  ami           = "ami-03250b0e01c28d196"
+resource "aws_instance" "amazon" {
+  ami           = "ami-00a44bd8918c7ee43"
   instance_type = "t3.medium"
   subnet_id                   = aws_subnet.public_subnet.id
   associate_public_ip_address = true
   key_name = "voxxed_key"
   vpc_security_group_ids = [aws_security_group.voxxed_sg.id]
   tags = {
-    Name = "ubuntu"
+    Name = "Amazon Linux"
   }
 }

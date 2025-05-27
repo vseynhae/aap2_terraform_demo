@@ -6,11 +6,11 @@
   gather_facts: true
 
   tasks:
-    - name: Ubuntu OS
+    - name: Amazon Linux
       block:
       - name: Install apache2 package on Ubuntu
-        ansible.builtin.dnf:
-          name: apache2
+        ansible.builtin.yum:
+          name: httpd
           state: present
 
       - name: Ensure apache2 is running and enabled
@@ -18,10 +18,10 @@
           name: httpd
           state: started
           enabled: yes
-      when: ansible_facts['distribution'] == 'Ubuntu'
+      when: ansible_facts['distribution'] == 'Amazon'
 
 
-    - name: CentOS OS
+    - name: CentOS Linux
       block:
       - name: Install httpd package on CentOS
         ansible.builtin.dnf:
