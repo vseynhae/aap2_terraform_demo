@@ -11,12 +11,21 @@
   - ansible.controller
 
   tasks:
+  - name: delete key pair every time because private key is only displayed once
+    amazon.aws.ec2_key:
+      name: voxxed_key
+      region: eu-central-1
+      access_key: "{{ aws_access }}"
+      secret_key: "{{ aws_secret }}"
+      state: absent
+
   - name: create a new EC2 key pair in AWS and capture private key to store in AAP later
     amazon.aws.ec2_key:
       name: voxxed_key
       region: eu-central-1
       access_key: "{{ aws_access }}"
       secret_key: "{{ aws_secret }}"
+      state: present
     no_log: true
     register: key_pair
 
@@ -95,6 +104,7 @@
       credential_type: Machine
       organization: "voxxed"
       inputs:
+        username: ec2-user
         ssh_key_data: "{{ key_pair['key']['private_key'] }}"
 
   - name: create an inventory
@@ -143,3 +153,18 @@
       credentials:
       - "voxxed AWS creds"
       - "voxxed Terraform state credential"
+
+  - name: Create job for deploying Apache
+    ansible.controller.job_template:
+      controller_host: "{{ aap2_host }}"
+      controller_username: "{{ aap2_username }}"
+      controller_password: "{{ aap2_password }}"
+      validate_certs: True
+      name: "Install Apache"
+      organization: "voxxed"
+      state: present
+      project: "voxxed"
+      inventory: "voxxed inventory"
+      playbook: "playbooks/2-apache.yml"
+      credentials:
+      - "AWS EC2 SSH"
