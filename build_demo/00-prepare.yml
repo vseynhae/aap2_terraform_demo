@@ -250,7 +250,7 @@
         unified_job_template:
           organization:
             name: "voxxed"
-          name: "1 - Terraform plan"
+          name: "2 - Terraform apply"
           alias: "tf plan"
           type: job_template
         related:
