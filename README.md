@@ -13,7 +13,7 @@ AAP demonstrated features include:
 
 - an AWS account
 - an AAP 2.5 with admin rights
-- an Execution Environment that contains `cloud.terraform` and the `terraform` binary (prebuilt for this demo)
+- an Ansible Execution Environment that contains `cloud.terraform` and the `terraform` binary (prebuilt for this demo)
 
 ## Preparing your AAP and AWS environments
 
