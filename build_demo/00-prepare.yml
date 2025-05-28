@@ -218,7 +218,7 @@
 
   - name: Create a workflow that plugs everything together
     ansible.controller.workflow_job_template:
-      name: "voxxed workflow TF + Ansible"
+      name: "Workflow all in one"
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
@@ -240,7 +240,7 @@
         unified_job_template:
           organization:
             name: "voxxed"
-          name: "approval"
+          name: "Do you approve this terraform plan?"
           type: workflow_approval
           timeout: 300
         related:
