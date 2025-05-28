@@ -57,7 +57,7 @@ resource "aws_security_group" "voxxed_sg" {
   }
 
   tags = {
-    Name = "voxxed-sg"
+    Name = "voxxed-sg-${random_string.suffix.result}"
   }
 }
 
