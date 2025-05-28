@@ -269,7 +269,7 @@
         unified_job_template:
           organization:
             name: "voxxed"
-          name: "approval"
+          name: "Do you approve cleaning up EC2 instances?"
           type: workflow_approval
           timeout: 600
         related:
