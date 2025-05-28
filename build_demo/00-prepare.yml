@@ -22,7 +22,7 @@
 
   - name: Create an S3 bucket to store the Terraform state file
     amazon.aws.s3_bucket:
-      name: voxxedbucket
+      name: "{{ aws_bucket_name }}" 
       region: eu-central-1
       access_key: "{{ aws_access }}"
       secret_key: "{{ aws_secret }}"
@@ -87,7 +87,7 @@
       organization: "voxxed"
       inputs:
         configuration: |
-          bucket = "voxxedbucket"
+          bucket = "{{ aws_bucket_name }}"
           key = "state.tfstate"
           region = "eu-central-1"
           access_key = "{{ aws_access }}"
