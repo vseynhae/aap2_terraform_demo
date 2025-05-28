@@ -14,6 +14,7 @@ We will integrate both technologies inside AAP:
 
 - Running the Terraform code individually inside AAP
 - Include the Terraform code as part of a larger workflow (day 1 + day 2)
+- An approval will be requested to perform the terraform apply
 - AAP will manage the Terraform State file in an S3 bucket
 - We'll use the Terraform State file as a dynamic inventory in order to post configure EC2 instances
 
