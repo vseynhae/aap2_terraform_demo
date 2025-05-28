@@ -2,12 +2,20 @@
 
 Configuration files and examples used for demonstrating Terraform and Ansible Automation Platform (AAP) integrations. 
 
-AAP demonstrated features include:
+Initially we will demonstrate Terraform and Ansible, individually from the CLI.
 
-- Running your Terraform code inside AAP
-- Include the Terraform code as part of a larger workflow 
-- AAP managing the Terraform State file in an S3 bucket (using the "Terraform backend configuration" credential type)
-- Using the Terraform State file as a dynamic inventory source in order to post configure EC2 instances
+This will bring up some challenges around the shared management of:
+
+- credentials (AWS, SSH)
+- Ansible inventory
+- terraform state file
+
+We will integrate both technologies inside AAP:
+
+- Running the Terraform code individually inside AAP
+- Include the Terraform code as part of a larger workflow (day 1 + day 2)
+- AAP will manage the Terraform State file in an S3 bucket
+- We'll use the Terraform State file as a dynamic inventory in order to post configure EC2 instances
 
 ## Requirements
 
@@ -29,7 +37,7 @@ aap2_password: your-aap-admin-password
 aws_access: your-aws-access
 aws_secret: your-aws-secret
 
-# no special characters in the name
+# no special characters in the name. Must be unique within AWS tenant.
 aws_bucket_name: yourbucket
 
 ssh_public_key: "ssh-rsa XYZ"
