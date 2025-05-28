@@ -45,7 +45,7 @@
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
       validate_certs: true
-      image: quay.io/acme_corp/terraform_ee
+      image: ghcr.io/sebw/ee_terraform
 
   - name: Create credential that will allow AAP to access AWS
     ansible.controller.credential:
