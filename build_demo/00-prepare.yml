@@ -1,5 +1,5 @@
 ---
-- name: prepare AAP with all the components for the demo
+- name: prepare demo lab
   hosts: localhost
   gather_facts: False
 
