@@ -8,11 +8,19 @@ Terraform code to deploy a basic infrastructure in AWS
 
 1. Install Terraform
 
-	```
+	```bash
 	sudo yum install -y yum-utils
 	sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
 	sudo yum -y install terraform
 	```
+   
+    OR
+
+    ```bash
+    curl "https://releases.hashicorp.com/terraform/1.10.4/terraform_1.10.4_linux_amd64.zip" -o "/tmp/terraform.zip"
+    sudo unzip /tmp/terraform.zip -d /usr/local/bin
+    hash -r
+    ```
 
 1. Define your credentials as environment variables
 

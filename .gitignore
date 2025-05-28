@@ -1,8 +1,8 @@
 execution-environment/context
 .terraform
 .terraform.*
-terraform.state
-terraform.state.backup
+terraform-cli/terraform.tfstate
+terraform-cli/terraform.state.backup
 .DS_Store
 .env
 vault-password.txt
