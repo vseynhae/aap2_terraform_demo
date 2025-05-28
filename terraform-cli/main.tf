@@ -97,7 +97,7 @@ resource "aws_route_table_association" "public_assoc" {
   route_table_id = aws_route_table.public_rt.id
 }
 
-resource "aws_instance" "centos" {
+resource "aws_instance" "ubuntu" {
   ami           = "ami-03250b0e01c28d196"
   instance_type = "t3.medium"
   subnet_id                   = aws_subnet.public_subnet.id

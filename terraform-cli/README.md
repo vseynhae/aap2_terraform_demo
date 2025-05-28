@@ -1,6 +1,6 @@
 # Terraform CLI
 
-Terraform code to deploy a basic infrastructure in AWS:
+Terraform code to deploy a basic infrastructure in AWS
 
 
 ## Preparing your environment
