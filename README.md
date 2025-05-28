@@ -29,6 +29,9 @@ aap2_password: your-aap-admin-password
 aws_access: your-aws-access
 aws_secret: your-aws-secret
 
+# no special characters in the name
+aws_bucket_name: yourbucket
+
 ssh_public_key: "ssh-rsa XYZ"
 
 ssh_private_key: |
