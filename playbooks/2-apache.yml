@@ -36,6 +36,21 @@
       when: ansible_facts['distribution'] == 'CentOS'
 
 
+    - name: Ubuntu Linux
+      block:
+      - name: Install apache2 package on Ubuntu
+        ansible.builtin.apt:
+          name: apache2
+          state: present
+
+      - name: Ensure apache2 is running and enabled
+        ansible.builtin.service:
+          name: apache2
+          state: started
+          enabled: yes
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+
     - name: Create index.html with custom content
       ansible.builtin.copy:
         dest: /var/www/html/index.html
