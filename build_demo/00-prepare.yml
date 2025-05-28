@@ -145,14 +145,15 @@
       validate_certs: True
       project: "voxxed"
       timeout: 30
-
-  - name: Create job for deploying EC2 instances
+  
+  - name: Create job for terraform plan
     ansible.controller.job_template:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
       validate_certs: True
-      name: "Deploy EC2 instances"
+      name: "1 - Terraform plan"
+      job_type: "check"
       organization: "voxxed"
       state: present
       project: "voxxed"
@@ -163,18 +164,19 @@
       - "voxxed AWS creds"
       - "voxxed Terraform state credential"
 
-  - name: Create job for deleting EC2 instances
+  - name: Create job for terraform apply
     ansible.controller.job_template:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
       validate_certs: True
-      name: "Destroy EC2 instances"
+      name: "2 - Terraform apply"
+      job_type: "run"
       organization: "voxxed"
       state: present
       project: "voxxed"
       inventory: "voxxed inventory"
-      playbook: "all-in-one/ansible/3-destroy.yml"
+      playbook: "all-in-one/ansible/1-deploy.yml"
       execution_environment: EE_terraform
       credentials:
       - "voxxed AWS creds"
@@ -186,7 +188,7 @@
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
       validate_certs: True
-      name: "Install Apache Web Server"
+      name: "3 - Install Apache Web Server"
       organization: "voxxed"
       state: present
       project: "voxxed"
@@ -196,6 +198,23 @@
       - "voxxed AWS EC2 SSH"
       extra_vars:
         message: Hello World
+
+  - name: Create job for deleting EC2 instances
+    ansible.controller.job_template:
+      controller_host: "{{ aap2_host }}"
+      controller_username: "{{ aap2_username }}"
+      controller_password: "{{ aap2_password }}"
+      validate_certs: True
+      name: "4 - Terraform destroy"
+      organization: "voxxed"
+      state: present
+      project: "voxxed"
+      inventory: "voxxed inventory"
+      playbook: "all-in-one/ansible/3-destroy.yml"
+      execution_environment: EE_terraform
+      credentials:
+      - "voxxed AWS creds"
+      - "voxxed Terraform state credential"
 
   - name: Create a workflow that plugs everything together
     ansible.controller.workflow_job_template:
@@ -207,41 +226,60 @@
       organization: "voxxed"
       state: present
       schema:
-      - identifier: provisioning
+      - identifier: tf_plan
         unified_job_template:
           organization:
             name: "voxxed"
-          name: "Deploy EC2 instances"
-          alias: "Deploy EC2 with Terraform"
+          name: "1 - Terraform plan"
           type: job_template
         related:
           success_nodes:
-            - identifier: post-provisioning
-          failure_nodes:
-            - identifier: approval
-      - identifier: post-provisioning
-        unified_job_template:
-          organization:
-            name: "voxxed"
-          name: "Install Apache Web Server"
-          alias: "Install Apache with Ansible"
-          type: job_template
-      - identifier: remediation
-        all_parents_must_converge: false
-        unified_job_template:
-          organization:
-            name: "voxxed"
-          name: "Destroy EC2 instances"
-          alias: "Clean up EC2 instances"
-          type: job_template
-      - identifier: approval
+            - identifier: approve_plan
+      - identifier: approve_plan
         all_parents_must_converge: false
         unified_job_template:
           organization:
             name: "voxxed"
           name: "approval"
           type: workflow_approval
-          timeout: 120
+          timeout: 300
         related:
           success_nodes:
-            - identifier: remediation
+            - identifier: tf_apply
+      - identifier: tf_apply
+        unified_job_template:
+          organization:
+            name: "voxxed"
+          name: "1 - Terraform plan"
+          alias: "tf plan"
+          type: job_template
+        related:
+          success_nodes:
+            - identifier: apache
+          failure_nodes:
+            - identifier: approve_cleanup
+      - identifier: apache
+        unified_job_template:
+          organization:
+            name: "voxxed"
+          name: "3 - Install Apache Web Server"
+          type: job_template
+      - identifier: approve_cleanup
+        all_parents_must_converge: false
+        unified_job_template:
+          organization:
+            name: "voxxed"
+          name: "approval"
+          type: workflow_approval
+          timeout: 600
+        related:
+          success_nodes:
+            - identifier: cleanup
+      - identifier: cleanup
+        all_parents_must_converge: false
+        unified_job_template:
+          organization:
+            name: "voxxed"
+          name: "4 - Terraform destroy"
+          type: job_template
+    tags: workflow
