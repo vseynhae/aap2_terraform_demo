@@ -47,21 +47,6 @@
       validate_certs: true
       image: quay.io/acme_corp/terraform_ee
 
-  - name: Create the project
-    ansible.controller.project:
-      controller_host: "{{ aap2_host }}"
-      controller_username: "{{ aap2_username }}"
-      controller_password: "{{ aap2_password }}"
-      validate_certs: True
-      name: "voxxed"
-      organization: "voxxed"
-      scm_type: git
-      scm_update_on_launch: True
-      scm_update_cache_timeout: 60
-      scm_url: https://github.com/sebw/aap2_terraform_demo
-      scm_branch: main
-      state: present
-
   - name: Create credential that will allow AAP to access AWS
     ansible.controller.credential:
       controller_host: "{{ aap2_host }}"
@@ -137,6 +122,30 @@
         hostnames:
         - public_dns
 
+  - name: Create the project
+    ansible.controller.project:
+      controller_host: "{{ aap2_host }}"
+      controller_username: "{{ aap2_username }}"
+      controller_password: "{{ aap2_password }}"
+      validate_certs: True
+      name: "voxxed"
+      organization: "voxxed"
+      scm_type: git
+      scm_update_on_launch: True
+      scm_update_cache_timeout: 60
+      scm_url: https://github.com/sebw/aap2_terraform_demo
+      scm_branch: main
+      state: present
+
+  - name: Update project before creating the jobs
+    ansible.controller.project_update:
+      controller_host: "{{ aap2_host }}"
+      controller_username: "{{ aap2_username }}"
+      controller_password: "{{ aap2_password }}"
+      validate_certs: True
+      project: "voxxed"
+      timeout: 30
+
   - name: Create job for deploying EC2 instances
     ansible.controller.job_template:
       controller_host: "{{ aap2_host }}"
@@ -148,7 +157,7 @@
       state: present
       project: "voxxed"
       inventory: "voxxed inventory"
-      playbook: "playbooks/1-deploy.yml"
+      playbook: "all-in-one/ansible/1-deploy.yml"
       execution_environment: EE_terraform
       credentials:
       - "voxxed AWS creds"
@@ -165,7 +174,7 @@
       state: present
       project: "voxxed"
       inventory: "voxxed inventory"
-      playbook: "playbooks/3-destroy.yml"
+      playbook: "all-in-one/ansible/3-destroy.yml"
       execution_environment: EE_terraform
       credentials:
       - "voxxed AWS creds"
@@ -182,7 +191,7 @@
       state: present
       project: "voxxed"
       inventory: "voxxed inventory"
-      playbook: "playbooks/2-apache.yml"
+      playbook: "all-in-one/ansible/2-apache.yml"
       credentials:
       - "voxxed AWS EC2 SSH"
       extra_vars:
