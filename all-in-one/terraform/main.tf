@@ -97,7 +97,7 @@ resource "aws_instance" "rhel" {
   instance_type = "t3.medium"
   subnet_id                   = aws_subnet.public_subnet.id
   associate_public_ip_address = true
-  key_name = "TechDayLux_key"
+  key_name = "SummitConnectBrussels_key"
   vpc_security_group_ids = [aws_security_group.tdlux_sg.id]
   tags = {
     Name = "RHELdemo2"

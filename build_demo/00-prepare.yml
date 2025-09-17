@@ -8,7 +8,7 @@
   ######################
 
   vars:
-    demo_name: TechDayLux
+    demo_name: SummitConnectBrussels
 
   vars_files:
   - vault.yml
@@ -140,8 +140,8 @@
       scm_type: git
       scm_update_on_launch: True
       scm_update_cache_timeout: 60
-      scm_url: https://github.com/sebw/aap2_terraform_demo
-      scm_branch: techday
+      scm_url: https://github.com/RedHatBelux/AAP2_terraform
+      scm_branch: summit_connect_2025
       state: present
 
   - name: Update project before creating the jobs

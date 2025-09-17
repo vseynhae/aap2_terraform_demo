@@ -32,6 +32,7 @@ We will integrate both technologies inside AAP:
 - an AWS account with sufficient permissions
 - an AAP 2.5 with admin rights
 - an Ansible Execution Environment that contains the `cloud.terraform` Ansible Collection and the `terraform` binary (prebuilt for the demo and available at `ghcr.io/sebw/ee_terraform`)
+- `botocore` & `boto3` python libraries are needed on the machine used to stand up the demo environment.
 
 ## Preparing your AAP and AWS environments
 
@@ -56,6 +57,7 @@ In the `build_demo` folder:
 	
 	aws_access: your-aws-access
 	aws_secret: your-aws-secret
+	aws_region: eu-central-1
 	
 	# no special characters in the name. Must be unique within AWS tenant.
 	aws_bucket_name: yourbucket

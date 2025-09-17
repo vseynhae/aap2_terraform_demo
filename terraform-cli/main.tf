@@ -27,8 +27,8 @@ resource "aws_vpc" "main_vpc" {
   }
 }
 
-resource "aws_security_group" "techdaylux_sg" {
-  name        = "techdaylux-sg-${random_string.suffix.result}"
+resource "aws_security_group" "summitconnectbrussels_sg" {
+  name        = "summitconnectbrussels-sg-${random_string.suffix.result}"
   description = "Allow SSH and HTTP"
   vpc_id      = aws_vpc.main_vpc.id
 
@@ -57,7 +57,7 @@ resource "aws_security_group" "techdaylux_sg" {
   }
 
   tags = {
-    Name = "techdaylux-sg-${random_string.suffix.result}"
+    Name = "summitconnectbrussels-sg-${random_string.suffix.result}"
   }
 }
 
@@ -102,8 +102,8 @@ resource "aws_instance" "rhel" {
   instance_type = "t3.medium"
   subnet_id                   = aws_subnet.public_subnet.id
   associate_public_ip_address = true
-  key_name = "TechDayLux_key"
-  vpc_security_group_ids = [aws_security_group.techdaylux_sg.id]
+  key_name = "SummitConnectBrussels_key"
+  vpc_security_group_ids = [aws_security_group.summitconnectbrussels_sg.id]
   tags = {
     Name = "RHELdemo1"
   }
