@@ -5,7 +5,6 @@ Terraform code to deploy a basic infrastructure in AWS
 
 ## Preparing your environment
 
-1. Prepare the demo environment based on this [README file](../README.md)
 
 1. Install Terraform
 
@@ -31,14 +30,16 @@ Terraform code to deploy a basic infrastructure in AWS
 	
 	```
 
+## Deploy resources
+
 1. Initialize Terraform
 
 	`terraform init`
 
 1. Create Terraform's plan
 
-	`terraform plan`
+	`terraform plan -out=myplan.tfplan`
 
 1. Deploy resources
 
-	`terraform apply`
+	`terraform apply myplan.tfplan`
