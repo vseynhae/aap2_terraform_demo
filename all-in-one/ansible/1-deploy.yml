@@ -1,6 +1,8 @@
 ---
 - name: Deploy resources via Terraform
   hosts: localhost
+  gather_facts: false
+
   tasks:
     - name: Create EC2s with Terraform
       cloud.terraform.terraform:
