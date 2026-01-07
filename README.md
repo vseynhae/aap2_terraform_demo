@@ -1,17 +1,18 @@
-# Terraform + Ansible Demo
+# OpenTofu + Ansible Demo
 
 This repository was used during @vseynhae and @sebw talk at
  - Red Hat Tech Day Luxembourg (branch `techday`) 
  - Voxxed Days Luxembourg 2025 (branch `main`)
  - Red Hat Summit Connect 2025 Brussels (branch `summit_connect_25`)
+ - Config Management Camp 2026 (branch `cfgmgmtcamp_2026`)
 
 Slides are available in the [pdf directory](https://github.com/RedHatBelux/AAP2_terraform/tree/summit_connect_25/pdf)
 
 ## Intro
 
-Configuration files and examples used for demonstrating Terraform and Ansible Automation Platform (AAP) integrations. 
+Configuration files and examples used for demonstrating OpenTofu and AWX integrations. 
 
-Initially we will demonstrate Terraform and Ansible, individually from the CLI (folders `ansible-cli` and `terraform-cli`).
+Initially we will demonstrate OpenTofu and Ansible, individually from the CLI (folders `ansible-cli` and `terraform-cli`).
 
 This will bring up some challenges around the shared management of:
 
@@ -19,22 +20,21 @@ This will bring up some challenges around the shared management of:
 - Ansible inventory
 - terraform state file
 
-We will integrate both technologies inside AAP:
+We will integrate both technologies inside AWX:
 
-- Running the Terraform code individually inside AAP
-- Include the Terraform code as part of a larger workflow (day 1 + day 2)
+- Running the OpenTofu code individually inside AWX
+- Include the OpenTofu code as part of a larger workflow (day 1 + day 2)
 - An approval will be requested to perform the terraform apply
-- AAP will manage the Terraform State file in an S3 bucket
-- We'll use the Terraform State file as a dynamic inventory in order to post configure EC2 instances
+- AWX will manage the OpenTofu State file in an S3 bucket
+- We'll use the OpenTofu State file as a dynamic inventory in order to post configure EC2 instances
 
 ## Requirements
-
-- an AWS account with sufficient permissions
-- an AAP 2.5 with admin rights
-- an Ansible Execution Environment that contains the `cloud.terraform` Ansible Collection and the `terraform` binary (prebuilt for the demo and available at `quay.io/redhatbelux/ee_terraform`)
+cfgmgmtcamp_2026 with sufficient permissions
+- an AWX with admin rights
+- an Ansible Execution Environment that contains the `cloud.terraform` Ansible Collection and the `terraform` binary (prebuilt for the demo and available at `quay.io/redhatbelux/ee_opentofu`)
 - `botocore` & `boto3` python libraries are needed on the machine used to stand up the demo environment.
 
-## Preparing your AAP and AWS environments
+## Preparing your AWX and AWS environments
 
 In the `build_demo` folder:
 
@@ -72,31 +72,31 @@ In the `build_demo` folder:
 
 - Run `ansible-playbook 00-prepare.yml`.
 
-This will create all the AAP resources:
+This will create all the AWX resources:
 
 - organization
 - execution environment
 - project
 - credentials
   - to access AWS
-  - to store the Terraform state file in an S3 bucket
+  - to store the OpenTofu state file in an S3 bucket
   - the SSH credential to connect to the EC2 instances 
 - some jobs
 - a workflow that plugs those jobs
 
 Some AWS resources: 
 
-- a key pair that will be used by AAP to post provision EC2 instances
-- an S3 bucket that will be used to store the Terraform State file
+- a key pair that will be used by AWX to post provision EC2 instances
+- an S3 bucket that will be used to store the OpenTofu State file
 
-## When AAP is up and running
+## When AWX is up and running
 
 Under Automation Execution > Templates, run the workflow.
 
-It will create a RHEL 9 EC2 instances with Terraform.
+It will create a RHEL 9 EC2 instances with OpenTofu.
 
-When the Terraform run is done, the state file is stored in the S3 bucket.
+When the OpenTofu run is done, the state file is stored in the S3 bucket.
 
 The workflow will refresh the inventory (based on the state file).
 
-The next job will deploy and configure Apache on the instances found in the Terraform state file.
+The next job will deploy and configure Apache on the instances found in the OpenTofu state file.
