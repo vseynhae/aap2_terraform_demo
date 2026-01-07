@@ -140,8 +140,7 @@
       scm_update_on_launch: True
       scm_update_cache_timeout: 60
       scm_url: https://github.com/RedHatBelux/AAP2_terraform
-        #scm_branch: cfgmgmtcamp_2026
-      scm_branch: summit_connect_2025
+      scm_branch: cfgmgmtcamp_2026
       state: present
 
   - name: Update project before creating the jobs
