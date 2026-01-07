@@ -8,14 +8,13 @@
   ######################
 
   vars:
-    demo_name: SummitConnectBrussels
+    demo_name: cfgmgmtcamp2026
 
   vars_files:
   - vault.yml
 
   collections:
-  - ansible.platform
-  - ansible.controller
+  - awx.awx
 
   tasks:
   - name: Import pubkey into a new EC2 key pair
@@ -27,7 +26,7 @@
       state: present
       key_material: "{{ ssh_public_key }}"
 
-  - name: Create an S3 bucket to store the Terraform state file
+  - name: Create an S3 bucket to store the OpenTofu state file
     amazon.aws.s3_bucket:
       name: "{{ aws_bucket_name }}" 
       region: "{{ aws_region }}"
@@ -35,27 +34,27 @@
       secret_key: "{{ aws_secret }}"
       state: present
 
-  - name: Create AAP organization
-    ansible.platform.organization:
+  - name: Create AWX organization
+    awx.awx.organization:
       name: "{{ demo_name }}"
-      state: present
-      gateway_hostname: "{{ aap2_host }}"
-      gateway_username: "{{ aap2_username }}"
-      gateway_password: "{{ aap2_password }}"
-      gateway_validate_certs: true
-
-  - name: Add the EE that contains Terraform binary and collection
-    ansible.controller.execution_environment:
-      name: "EE_terraform"
       state: present
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
       validate_certs: true
-      image: quay.io/redhatbelux/ee_terraform
 
-  - name: Create credential that will allow AAP to access AWS
-    ansible.controller.credential:
+  - name: Add the EE that contains OpenTofu binary and collection
+    awx.awx.execution_environment:
+      name: "EE_opentofu"
+      state: present
+      controller_host: "{{ aap2_host }}"
+      controller_username: "{{ aap2_username }}"
+      controller_password: "{{ aap2_password }}"
+      validate_certs: true
+      image: quay.io/redhatbelux/ee_opentofu
+
+  - name: Create credential that will allow AWX to access AWS
+    awx.awx.credential:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
@@ -68,13 +67,13 @@
         username: "{{ aws_access }}"
         password: "{{ aws_secret }}"
 
-  - name: Create Terraform State credential
-    ansible.controller.credential:
+  - name: Create OpenTofu State credential
+    awx.awx.credential:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
       validate_certs: true
-      name: "{{ demo_name }} Terraform state credential"
+      name: "{{ demo_name }} OpenTofu state credential"
       credential_type: Terraform backend configuration
       organization: "{{ demo_name }}"
       inputs:
@@ -86,7 +85,7 @@
           secret_key = "{{ aws_secret }}"
 
   - name: Create machine credential to access EC2 instances
-    ansible.controller.credential:
+    awx.awx.credential:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
@@ -99,7 +98,7 @@
         ssh_key_data: "{{ ssh_private_key }}"
 
   - name: create an inventory
-    ansible.controller.inventory:
+    awx.awx.inventory:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
@@ -109,17 +108,17 @@
       state: present
 
   - name: Add a dynamic source to the inventory using the TF state file
-    ansible.controller.inventory_source:
+    awx.awx.inventory_source:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
       validate_certs: true
-      name: "Terraform State"
+      name: "OpenTofu State"
       description: Source for inventory
-      execution_environment: "EE_terraform"
+      execution_environment: "EE_opentofu"
       inventory: "{{ demo_name }} inventory"
       source: terraform
-      credential: "{{ demo_name }} Terraform state credential"
+      credential: "{{ demo_name }} OpenTofu state credential"
       overwrite: true
       update_on_launch: true
       organization: "{{ demo_name }}"
@@ -130,7 +129,7 @@
         - public_dns
 
   - name: Create the project
-    ansible.controller.project:
+    awx.awx.project:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
@@ -141,11 +140,12 @@
       scm_update_on_launch: True
       scm_update_cache_timeout: 60
       scm_url: https://github.com/RedHatBelux/AAP2_terraform
+        #scm_branch: cfgmgmtcamp_2026
       scm_branch: summit_connect_2025
       state: present
 
   - name: Update project before creating the jobs
-    ansible.controller.project_update:
+    awx.awx.project_update:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
@@ -153,44 +153,44 @@
       project: "{{ demo_name }}"
       timeout: 30
   
-  - name: Create job for terraform plan
-    ansible.controller.job_template:
+  - name: Create job for opentofu plan
+    awx.awx.job_template:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
       validate_certs: True
-      name: "1 - Terraform plan"
+      name: "1 - OpenTofu plan"
       job_type: "check"
       organization: "{{ demo_name }}"
       state: present
       project: "{{ demo_name }}"
       inventory: "{{ demo_name }} inventory"
       playbook: "all-in-one/ansible/1-deploy.yml"
-      execution_environment: EE_terraform
+      execution_environment: EE_opentofu
       credentials:
       - "{{ demo_name }} AWS creds"
-      - "{{ demo_name }} Terraform state credential"
+      - "{{ demo_name }} OpenTofu state credential"
 
-  - name: Create job for terraform apply
-    ansible.controller.job_template:
+  - name: Create job for opentofu apply
+    awx.awx.job_template:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
       validate_certs: True
-      name: "2 - Terraform apply"
+      name: "2 - OpenTofu apply"
       job_type: "run"
       organization: "{{ demo_name }}"
       state: present
       project: "{{ demo_name }}"
       inventory: "{{ demo_name }} inventory"
       playbook: "all-in-one/ansible/1-deploy.yml"
-      execution_environment: EE_terraform
+      execution_environment: EE_opentofu
       credentials:
       - "{{ demo_name }} AWS creds"
-      - "{{ demo_name }} Terraform state credential"
+      - "{{ demo_name }} OpenTofu state credential"
 
   - name: Create job for deploying Apache Web Server
-    ansible.controller.job_template:
+    awx.awx.job_template:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
@@ -207,24 +207,24 @@
         message: Hello World
 
   - name: Create job for deleting EC2 instances
-    ansible.controller.job_template:
+    awx.awx.job_template:
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
       controller_password: "{{ aap2_password }}"
       validate_certs: True
-      name: "4 - Terraform destroy"
+      name: "4 - OpenTofu destroy"
       organization: "{{ demo_name }}"
       state: present
       project: "{{ demo_name }}"
       inventory: "{{ demo_name }} inventory"
       playbook: "all-in-one/ansible/3-destroy.yml"
-      execution_environment: EE_terraform
+      execution_environment: EE_opentofu
       credentials:
       - "{{ demo_name }} AWS creds"
-      - "{{ demo_name }} Terraform state credential"
+      - "{{ demo_name }} OpenTofu state credential"
 
   - name: Create a workflow that plugs everything together
-    ansible.controller.workflow_job_template:
+    awx.awx.workflow_job_template:
       name: "Workflow all in one"
       controller_host: "{{ aap2_host }}"
       controller_username: "{{ aap2_username }}"
@@ -237,7 +237,7 @@
         unified_job_template:
           organization:
             name: "{{ demo_name }}"
-          name: "1 - Terraform plan"
+          name: "1 - OpenTofu plan"
           type: job_template
         related:
           success_nodes:
@@ -247,7 +247,7 @@
         unified_job_template:
           organization:
             name: "{{ demo_name }}"
-          name: "Do you approve this terraform plan?"
+          name: "Do you approve this opentofu plan?"
           type: workflow_approval
           timeout: 300
         related:
@@ -257,7 +257,7 @@
         unified_job_template:
           organization:
             name: "{{ demo_name }}"
-          name: "2 - Terraform apply"
+          name: "2 - OpenTofu apply"
           alias: "tf plan"
           type: job_template
         related:
@@ -287,6 +287,6 @@
         unified_job_template:
           organization:
             name: "{{ demo_name }}"
-          name: "4 - Terraform destroy"
+          name: "4 - OpenTofu destroy"
           type: job_template
     tags: workflow

@@ -22,8 +22,8 @@ resource "aws_vpc" "main_vpc" {
   }
 }
 
-resource "aws_security_group" "tdlux_sg" {
-  name        = "tdlux-sg"
+resource "aws_security_group" "sg" {
+  name        = "demo-sg"
   description = "Allow SSH and HTTP"
   vpc_id      = aws_vpc.main_vpc.id
 
@@ -52,7 +52,7 @@ resource "aws_security_group" "tdlux_sg" {
   }
 
   tags = {
-    Name = "tdlux-sg"
+    Name = "demo-sg"
   }
 }
 
@@ -97,8 +97,8 @@ resource "aws_instance" "rhel" {
   instance_type = "t3.medium"
   subnet_id                   = aws_subnet.public_subnet.id
   associate_public_ip_address = true
-  key_name = "SummitConnectBrussels_key"
-  vpc_security_group_ids = [aws_security_group.tdlux_sg.id]
+  key_name = "mydemo_ssh_pubkey"
+  vpc_security_group_ids = [aws_security_group.sg.id]
   tags = {
     Name = "RHELdemo2"
   }
